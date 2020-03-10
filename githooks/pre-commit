@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd windows
+make
+git add HAM-Radio-ITU-Callsign-Prefix-Lookup-windows.zip
