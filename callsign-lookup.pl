@@ -5,6 +5,26 @@
 
 #use Data::Dumper;
 
+sub string_compare($$) {
+  my $s1 = shift;
+  my $s2 = shift;
+  
+  my $i = 0;
+  
+  while (1) {
+    if ( substr($s1, $i, 1) && substr($s2, $i, 1) ) {
+      if (substr($s1, $i, 1) eq substr($s2, $i, 1)) {
+        $i++;
+        next;
+      }
+    }
+    last;
+  }
+  
+  return $i;
+  
+}
+
 my $call = uc shift @ARGV;
 
 my %db;
@@ -23,7 +43,7 @@ while (<>) {
         
         $prefix = $from;
         while (1) {
-            #print "prefix: " . $prefix . " country: " . $country . "\n";
+            #print "Add prefix: " . $prefix . " country: " . $country . "\n";
             $db{$prefix} = $country;
             
             last if ($prefix eq $to);
@@ -38,7 +58,7 @@ while (<>) {
         
     } else {
     
-        #print "prefix: " . $prefix . " country: " . $country . "\n";
+        #print "Add prefix: " . $prefix . " country: " . $country . "\n";
         $db{$prefix} = $country;
     }
 
@@ -46,19 +66,30 @@ while (<>) {
 
 #print Dumper(\%db);
 
-my $hit = "";
+my $longest_match = 0;
 
 foreach my $prefix (keys %db) {
 
-    if ($prefix eq substr($call, 0, length($prefix))) {
-        #print "Prefix: $prefix Country: $db{$prefix}\n";
-        $hit = $prefix if (length($prefix) > length($hit));
+    if (string_compare($prefix, $call) > $longest_match) {
+      $longest_match = string_compare($prefix, $call);
+      if ($longest_match == 3) {
+      print;
+      }
     }
 
 }
 
-if ($hit) {
-    print "Prefix: $hit Country: $db{$hit}\n";
-} else {
+if ($longest_match == 0) {
     print "Not found.\n";
+    exit(1);
+}
+
+#print "longest match: $longest_match\n";
+
+foreach my $prefix (keys %db) {
+
+    if (string_compare($prefix, $call) == $longest_match) {
+      print "Prefix: $prefix Country: $db{$prefix}\n";
+    }
+
 }
